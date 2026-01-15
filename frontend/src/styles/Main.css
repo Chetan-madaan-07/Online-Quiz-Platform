@@ -219,13 +219,13 @@ body {
   color: red;
   margin-bottom: 10px;
 }
-.navbar {
+/* .navbar {
   display: flex;
   justify-content: space-between;
   padding: 15px 40px;
   background: black;
   color: white;
-}
+} */
 
 .nav-right button {
   margin-left: 10px;
