@@ -1,32 +1,69 @@
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 function Navbar() {
-    return (
-        <nav className="navbar">
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [open, setOpen] = useState(false);
 
-            <div className="nav-left">
-                <Link to="/" className="brand-link">
-                    <span className="logo">⚡</span>
-                    <span className="brand">QuizClash</span>
-                </Link>
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    setOpen(false);
+    navigate("/signin");
+  };
+
+  return (
+    <nav className="navbar">
+      {/* LEFT */}
+      <div className="nav-left" onClick={() => navigate("/")}>
+        ⚡ QuizClash
+      </div>
+
+      {/* RIGHT */}
+      <div className="nav-right">
+        {!isLoggedIn ? (
+          // ❌ Logged out view
+          <>
+            <button onClick={() => navigate("/signin")}>Sign In</button>
+            <button onClick={() => navigate("/signup")}>Sign Up</button>
+          </>
+        ) : (
+          // ✅ Logged in view
+          <div className="profile-wrapper">
+            <div
+              className="profile-btn"
+              onClick={() => setOpen(!open)}
+            >
+              <img
+                src="/default-avatar.png"
+                alt="profile"
+                className="profile-img"
+              />
+              <span className="arrow">▾</span>
             </div>
 
-
-
-            <div className="nav-right">
-                <span className="nav-item">Arena</span>
-                <span className="nav-item">Leaderboard</span>
-                <span className="nav-item">History</span>
-                <Link to="/signIn">
-                    <button className="sign-in-btn">Sign In</button>
-                </Link>
-
-                <Link to="/signUp">
-                    <button className="sign-in-btn">Sign Up</button>
-                </Link>
-            </div>
-        </nav>
-    );
+            {open && (
+              <div className="dropdown">
+                <p>Profile</p>
+                <p>History</p>
+                <p onClick={handleLogout} className="logout">
+                  Logout
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </nav>
+  );
 }
 
 export default Navbar;
+
 

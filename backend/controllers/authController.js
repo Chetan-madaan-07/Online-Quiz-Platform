@@ -25,18 +25,44 @@ const signup = async (req, res) => {
       email,
       password: hashedPassword,
     });
+    console.log("✅ USER SAVED IN DB");
+    console.log({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+    });
 
     // 5. response
     res.status(201).json({
       message: "User registered successfully",
       userId: user._id,
     });
+    // 6. after sign-up, auto login karwane ke liye token bhi bhejte hain
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.status(201).json({
+      message: "User registered successfully",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 const jwt = require("jsonwebtoken");
+
+
 
 // LOGIN
 const login = async (req, res) => {
@@ -53,6 +79,13 @@ const login = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
+    console.log("✅ USER FOUND IN DB");
+    console.log({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+    });
+
 
     // 3. password match
     const isMatch = await bcrypt.compare(password, user.password);
