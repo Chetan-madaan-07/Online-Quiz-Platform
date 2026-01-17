@@ -1,19 +1,14 @@
-import { useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/authContext";
 
 function Navbar() {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, logout } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
-  }, []);
-
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
+    logout();          // clears context + storage
     setOpen(false);
     navigate("/signin");
   };
@@ -27,11 +22,24 @@ function Navbar() {
 
       {/* RIGHT */}
       <div className="nav-right">
-        {!isLoggedIn ? (
+        {!user ? (
           // ❌ Logged out view
           <>
-            <button onClick={() => navigate("/signin")}>Sign In</button>
-            <button onClick={() => navigate("/signup")}>Sign Up</button>
+            <button
+              className="sign-in-btn"
+              onClick={() => navigate("/signin")}
+            >
+              Sign In
+            </button>
+
+            <button
+              className="sign-in-btn primary"
+              onClick={() => navigate("/signup")}
+            >
+              Sign Up
+            </button>
+
+
           </>
         ) : (
           // ✅ Logged in view
@@ -50,7 +58,7 @@ function Navbar() {
 
             {open && (
               <div className="dropdown">
-                <p>Profile</p>
+                <p>{user.name || "Profile"}</p>
                 <p>History</p>
                 <p onClick={handleLogout} className="logout">
                   Logout
@@ -65,5 +73,6 @@ function Navbar() {
 }
 
 export default Navbar;
+
 
 

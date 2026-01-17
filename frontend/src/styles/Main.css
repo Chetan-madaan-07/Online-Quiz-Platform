@@ -65,6 +65,61 @@ body {
 .sign-in-btn:hover {
   background-color: #1a1a1a;
 }
+.nav-right button {
+  margin-left: 10px;
+}
+
+.profile-wrapper {
+  position: relative;
+}
+
+.profile-btn {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.profile-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+.arrow {
+  margin-left: 6px;
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 45px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  width: 140px;
+}
+
+.dropdown p {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown p:hover {
+  background: #222;
+}
+
+.logout {
+  color: red;
+}
+.primary {
+  background-color: #4f46e5;
+  border: none;
+}
+
+.primary:hover {
+  background-color: #4338ca;
+}
+
 /* Hero Section */
 .hero {
   background-color: #0b0b0b;
@@ -227,52 +282,7 @@ body {
   color: white;
 } */
 
-.nav-right button {
-  margin-left: 10px;
-}
 
-.profile-wrapper {
-  position: relative;
-}
-
-.profile-btn {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.profile-img {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-}
-
-.arrow {
-  margin-left: 6px;
-}
-
-.dropdown {
-  position: absolute;
-  right: 0;
-  top: 45px;
-  background: #111;
-  border: 1px solid #333;
-  border-radius: 6px;
-  width: 140px;
-}
-
-.dropdown p {
-  padding: 10px;
-  cursor: pointer;
-}
-
-.dropdown p:hover {
-  background: #222;
-}
-
-.logout {
-  color: red;
-}
 
 
 

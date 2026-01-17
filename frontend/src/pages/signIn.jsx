@@ -1,49 +1,56 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-
-
-
+import { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/authContext";
 
 function SignIn() {
-    const [error, setError] = useState("");
+    const navigate = useNavigate();
+    const { setUser } = useContext(AuthContext);
 
+    const [error, setError] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
 
-        try{
-            const res = await fetch("http://localhost:5000/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            setError(data.message || "Invalid credentials");
+        if (!email || !password) {
+            setError("Please fill in all fields");
             return;
         }
 
-        // ✅ success
-        localStorage.setItem("token", data.token);
-        navigate("/"); // home / dashboard
-        }catch (error) {
-            console.error("Signin error:", error);
+        try {
+            const res = await fetch("http://localhost:5000/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                setError(data.message || "Invalid credentials");
+                return;
+            }
+
+            // ✅ SUCCESS: update storage + React state
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+
+            // 🔥 THIS LINE FIXES THE REFRESH ISSUE
+            setUser(data.user);
+
+            navigate("/");
+        } catch (err) {
+            console.error("Signin error:", err);
+            setError("Something went wrong. Please try again.");
         }
     };
 
-
     return (
-
-
         <div className="auth-page">
             <div className="auth-card">
-                        {error && <p className="error-text">{error}</p>}
+                {error && <p className="error-text">{error}</p>}
                 <h2>Sign In</h2>
 
                 <form onSubmit={handleSubmit}>
