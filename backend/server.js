@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes"); // 👈 YAHAN import
+const userRoutes = require("./routes/userRoutes");
 const cors = require("cors");
 
 dotenv.config();
@@ -13,10 +14,13 @@ app.use(cors());
 connectDB();
 
 // middleware (JSON body read karne ke liye)
-app.use(express.json());
+// Increase limit to handle base64 image uploads (50MB limit)
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // 👇👇 YAHI PE LAGANI HAI YE LINE 👇👇
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 const authMiddleware = require("./middleware/authMiddleware");
 
 app.get("/api/protected", authMiddleware, (req, res) => {

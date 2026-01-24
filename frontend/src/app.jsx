@@ -5,6 +5,7 @@ import HeroSection from "./components/heroSection";
 import StatsSection from "./components/statsSection";
 import SignIn from "./pages/signIn";
 import SignUp from "./pages/signUp";
+import Profile from "./pages/profile";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
 
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </div>
   );

@@ -49,7 +49,12 @@ function Navbar() {
               onClick={() => setOpen(!open)}
             >
               <img
-                src="/default-avatar.png"
+                src={
+                  user.profilePhoto ||
+                  "https://ui-avatars.com/api/?name=" +
+                    encodeURIComponent(user.name || "User") +
+                    "&background=8b5cf6&color=fff&size=36"
+                }
                 alt="profile"
                 className="profile-img"
               />
@@ -58,7 +63,9 @@ function Navbar() {
 
             {open && (
               <div className="dropdown">
-                <p>{user.name || "Profile"}</p>
+                <p onClick={() => { navigate("/profile"); setOpen(false); }}>
+                  Profile
+                </p>
                 <p>History</p>
                 <p onClick={handleLogout} className="logout">
                   Logout
