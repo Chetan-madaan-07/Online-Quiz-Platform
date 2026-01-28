@@ -1,8 +1,10 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
-const authRoutes = require("./routes/authRoutes"); // 👈 YAHAN import
+const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const campaignRoutes = require("./routes/campaignRoutes");
+const questionRoutes = require("./routes/questionRoutes");
 const cors = require("cors");
 
 dotenv.config();
@@ -21,6 +23,8 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // 👇👇 YAHI PE LAGANI HAI YE LINE 👇👇
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/campaign", campaignRoutes);
+app.use("/api/questions", questionRoutes);
 const authMiddleware = require("./middleware/authMiddleware");
 
 app.get("/api/protected", authMiddleware, (req, res) => {

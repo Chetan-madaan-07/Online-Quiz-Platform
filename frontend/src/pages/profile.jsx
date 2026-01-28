@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 
@@ -9,6 +9,10 @@ function Profile() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showCropper, setShowCropper] = useState(false);
+  const [cropImage, setCropImage] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0, size: 0.8 });
+  const imgRef = useRef(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -88,55 +92,50 @@ function Profile() {
         return;
       }
 
-      // Compress image before converting to base64
+      // Load image into in-app cropper first
       const reader = new FileReader();
       reader.onloadend = () => {
-        const img = new Image();
-        img.onload = () => {
-          // Create canvas to compress image
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 400;
-          const MAX_HEIGHT = 400;
-          
-          let width = img.width;
-          let height = img.height;
-
-          // Calculate new dimensions
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height = (height * MAX_WIDTH) / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width = (width * MAX_HEIGHT) / height;
-              height = MAX_HEIGHT;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-
-          // Draw and compress
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          // Convert to base64 with compression (0.8 quality)
-          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-          
-          setFormData((prev) => ({
-            ...prev,
-            profilePhoto: compressedBase64,
-          }));
-          setError(""); // Clear any previous errors
-        };
-        img.onerror = () => {
-          setError("Failed to load image");
-        };
-        img.src = reader.result;
+        setCropImage(reader.result);
+        setShowCropper(true);
+        setError(""); // Clear any previous errors
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleCropChange = (e) => {
+    const { name, value } = e.target;
+    setCrop((prev) => ({
+      ...prev,
+      [name]: name === "size" ? parseFloat(value) : parseFloat(value),
+    }));
+  };
+
+  const applyCrop = () => {
+    if (!imgRef.current || !cropImage) return;
+
+    const img = imgRef.current;
+    const canvas = document.createElement("canvas");
+    const size = Math.min(img.naturalWidth, img.naturalHeight) * crop.size;
+    const x = (img.naturalWidth - size) / 2 + crop.x * img.naturalWidth;
+    const y = (img.naturalHeight - size) / 2 + crop.y * img.naturalHeight;
+
+    canvas.width = 400;
+    canvas.height = 400;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, x, y, size, size, 0, 0, 400, 400);
+
+    const croppedBase64 = canvas.toDataURL("image/jpeg", 0.8);
+    setFormData((prev) => ({
+      ...prev,
+      profilePhoto: croppedBase64,
+    }));
+    setShowCropper(false);
+  };
+
+  const cancelCrop = () => {
+    setShowCropper(false);
+    setCropImage(null);
   };
 
   const handleSubmit = async (e) => {
@@ -297,6 +296,53 @@ function Profile() {
               )}
             </div>
           </div>
+
+          {showCropper && cropImage && (
+            <div className="cropper-modal">
+              <div className="cropper-content">
+                <h3>Select visible area</h3>
+                <div className="cropper-image-wrapper">
+                  <img
+                    ref={imgRef}
+                    src={cropImage}
+                    alt="Crop"
+                    className="cropper-image"
+                  />
+                  <div className="cropper-overlay" />
+                </div>
+                <div className="cropper-controls">
+                  <label>
+                    Zoom
+                    <input
+                      type="range"
+                      name="size"
+                      min="0.4"
+                      max="1"
+                      step="0.05"
+                      value={crop.size}
+                      onChange={handleCropChange}
+                    />
+                  </label>
+                </div>
+                <div className="cropper-actions">
+                  <button
+                    type="button"
+                    className="cancel-btn"
+                    onClick={cancelCrop}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="save-btn"
+                    onClick={applyCrop}
+                  >
+                    Use Photo
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="form-grid">
             <div className="form-group">

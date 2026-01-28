@@ -19,10 +19,60 @@ const getProfile = async (req, res) => {
         gender: user.gender,
         age: user.age,
         bio: user.bio,
+        stars: user.stars,
       },
     });
   } catch (error) {
     console.error("Get profile error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Get user rankings
+const getRankings = async (req, res) => {
+  try {
+    // Get top 10 users sorted by stars (points)
+    const topUsers = await User.find()
+      .select("name profilePhoto stars")
+      .sort({ stars: -1 })
+      .limit(10);
+
+    // If user is authenticated, find their rank and include their data
+    let currentUserRank = null;
+    let currentUserData = null;
+    
+    if (req.user) {
+      const currentUser = await User.findById(req.user).select("name profilePhoto stars");
+      if (currentUser) {
+        currentUserData = {
+          id: currentUser._id,
+          name: currentUser.name,
+          profilePhoto: currentUser.profilePhoto,
+          stars: currentUser.stars,
+        };
+        
+        // Find current user's rank
+        const usersWithMoreStars = await User.countDocuments({ stars: { $gt: currentUser.stars } });
+        currentUserRank = usersWithMoreStars + 1;
+      }
+    }
+
+    res.json({
+      success: true,
+      topUsers: topUsers.map((user, index) => ({
+        rank: index + 1,
+        id: user._id,
+        name: user.name,
+        profilePhoto: user.profilePhoto,
+        stars: user.stars,
+      })),
+      currentUser: currentUserData ? {
+        ...currentUserData,
+        rank: currentUserRank,
+      } : null,
+    });
+  } catch (error) {
+    console.error("Get rankings error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -118,5 +168,5 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { getProfile, updateProfile };
+module.exports = { getProfile, getRankings, updateProfile };
 

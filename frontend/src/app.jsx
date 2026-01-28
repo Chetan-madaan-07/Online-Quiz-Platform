@@ -6,6 +6,9 @@ import StatsSection from "./components/statsSection";
 import SignIn from "./pages/signIn";
 import SignUp from "./pages/signUp";
 import Profile from "./pages/profile";
+import Campaign from "./pages/campaign";
+import LevelPlay from "./pages/levelPlay";
+import Rankings from "./pages/rankings";
 
 function App() {
   return (
@@ -26,6 +29,9 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/campaign" element={<Campaign />} />
+        <Route path="/campaign/level/:levelNumber" element={<LevelPlay />} />
+        <Route path="/rankings" element={<Rankings />} />
       </Routes>
     </div>
   );

@@ -1,4 +1,11 @@
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/authContext";
+
 function HeroSection() {
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+
   return (
     <section className="hero">
  
@@ -14,8 +21,24 @@ function HeroSection() {
         Prove your knowledge and climb the ranks.
       </p>
       <div className="hero-actions">
-        <button className="primary-btn">Find Match</button>
-        <button className="secondary-btn">Global Rankings</button>
+        <button
+          className="primary-btn"
+          onClick={() => navigate(user ? "/campaign" : "/signin")}
+        >
+          Campaign Mode
+        </button>
+        <button
+          className="secondary-btn"
+          onClick={() => navigate("/rankings")}
+        >
+          Global Rankings
+        </button>
+        <button
+          className="online-btn"
+          onClick={() => navigate(user ? "/online" : "/signin")}
+        >
+          🌐 Enter Online Mode
+        </button>
       </div>
     </section>
   );
