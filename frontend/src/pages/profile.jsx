@@ -82,7 +82,7 @@ function Profile() {
     if (file) {
       // Validate file type
       if (!file.type.startsWith("image/")) {
-        setError("Please select a valid image file");
+        setError("image type not valid");
         return;
       }
 
